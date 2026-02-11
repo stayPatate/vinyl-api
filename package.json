@@ -8,10 +8,13 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
-    "hono": "^4.11.9"
+    "dotenv": "^17.2.4",
+    "hono": "^4.11.9",
+    "mongoose": "^9.2.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.19.33",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"
   }
