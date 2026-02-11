@@ -2,6 +2,7 @@ import { Hono } from "hono"
 import mongoose from "mongoose"
 import { GroupModel } from "../models/group.model.js"
 import { groupCreateSchema, groupUpdateSchema } from "../validators/group.validator.js"
+import { VinylModel } from "../models/vinyl.model.js"
 
 export const groupRouter = new Hono()
 
@@ -66,3 +67,17 @@ groupRouter.delete("/:id", async (c) => {
 
   return c.json({ ok: true })
 })
+
+groupRouter.get("/:id/vinyls", async (c) => {
+  const id = c.req.param("id")
+  if (!mongoose.isValidObjectId(id)) return c.json({ error: "Invalid id" }, 400)
+
+  const { state } = c.req.query()
+
+  const filter: any = { groupId: new mongoose.Types.ObjectId(id) }
+  if (state) filter.state = state
+
+  const vinyls = await VinylModel.find(filter).sort({ createdAt: -1 })
+  return c.json(vinyls)
+})
+
