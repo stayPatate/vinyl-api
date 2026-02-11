@@ -1,7 +1,7 @@
 ```
 npm install
-npm run dev
-```
+
+## Configuration
 
 ```
 open http://localhost:3000
