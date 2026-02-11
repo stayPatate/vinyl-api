@@ -1,7 +1,7 @@
 import { Hono } from "hono"
 import mongoose from "mongoose"
 import { VinylModel } from "../models/vinyl.model.js"
-import { vinylCreateSchema, vinylUpdateSchema } from "../validators/vinyl.validator.js"
+import { vinylCreateSchema, vinylUpdateSchema, vinylStockPatchSchema } from "../validators/vinyl.validator.js"
 
 export const vinylRouter = new Hono()
 
@@ -122,6 +122,34 @@ vinylRouter.patch("/:id", async (c) => {
 
   const updated = await VinylModel.findByIdAndUpdate(id, updateDoc, { new: true, runValidators: true })
   if (!updated) return c.json({ error: "Not found" }, 404)
+
+  return c.json(updated)
+})
+
+vinylRouter.patch("/:id/stock", async (c) => {
+  const id = c.req.param("id")
+  if (!mongoose.isValidObjectId(id)) return c.json({ error: "Invalid id" }, 400)
+
+  const body = await c.req.json().catch(() => null)
+  const parsed = vinylStockPatchSchema.safeParse(body)
+  if (!parsed.success) return c.json({ error: parsed.error.flatten() }, 400)
+
+  const { delta } = parsed.data
+
+  const updated = await VinylModel.findByIdAndUpdate(
+    id,
+    { $inc: { stock: delta } },
+    { new: true }
+  )
+
+  if (!updated) return c.json({ error: "Not found" }, 404)
+
+  // Optionnel: empêcher stock < 0 (simple)
+  if (updated.stock < 0) {
+    // rollback
+    await VinylModel.findByIdAndUpdate(id, { $inc: { stock: -delta } })
+    return c.json({ error: "Stock cannot be negative" }, 400)
+  }
 
   return c.json(updated)
 })
