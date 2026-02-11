@@ -23,7 +23,53 @@ vinylRouter.post("/", async (c) => {
 })
 
 vinylRouter.get("/", async (c) => {
-  const vinyls = await VinylModel.find().sort({ createdAt: -1 })
+  const q = c.req.query()
+
+  const { state, priceMin, groupId, genre, sort, fields, embed } = q
+
+  const filter: any = {}
+
+  if (state) filter.state = state
+  if (priceMin) filter.price = { $gte: Number(priceMin) }
+
+  if (groupId) {
+    if (!mongoose.isValidObjectId(groupId)) return c.json({ error: "Invalid groupId" }, 400)
+    filter.groupId = new mongoose.Types.ObjectId(groupId)
+  }
+
+  if (genre) {}
+
+  let query = VinylModel.find(filter)
+
+  const shouldEmbedGroup = embed === "group" || embed === "true"
+  const shouldMatchGenre = Boolean(genre)
+
+  if (shouldEmbedGroup || shouldMatchGenre) {
+    query = query.populate({
+      path: "groupId",
+      select: shouldEmbedGroup ? undefined : "_id",
+      match: shouldMatchGenre ? { genre } : undefined,
+    })
+  }
+
+  if (sort) {
+    const sortFields = sort.split(",").join(" ")
+    query = query.sort(sortFields)
+  } else {
+    query = query.sort({ createdAt: -1 })
+  }
+
+  if (fields) {
+    const selectFields = fields.split(",").join(" ")
+    query = query.select(selectFields)
+  }
+
+  const vinyls = await query
+
+  if (shouldMatchGenre) {
+    return c.json(vinyls.filter((v: any) => v.groupId))
+  }
+
   return c.json(vinyls)
 })
 
