@@ -1,0 +1,19 @@
+meta {
+  name: Patch a Vinyl
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/vinyls/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
+
+settings {
+  encodeUrl: true
+}

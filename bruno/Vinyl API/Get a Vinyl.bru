@@ -1,0 +1,19 @@
+meta {
+  name: Get a Vinyl
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/vinyls/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
+
+settings {
+  encodeUrl: true
+}

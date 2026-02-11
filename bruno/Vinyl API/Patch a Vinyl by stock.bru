@@ -1,0 +1,19 @@
+meta {
+  name: Patch a Vinyl by stock
+  type: http
+  seq: 11
+}
+
+patch {
+  url: {{baseUrl}}/vinyls/:id/stock
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,19 @@
+meta {
+  name: Delete a Vinyl
+  type: http
+  seq: 12
+}
+
+delete {
+  url: {{baseUrl}}/vinyls/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
+
+settings {
+  encodeUrl: true
+}
