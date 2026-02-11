@@ -1,0 +1,19 @@
+meta {
+  name: Get A Group
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/groups/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
+
+settings {
+  encodeUrl: true
+}
